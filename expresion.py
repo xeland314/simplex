@@ -1,4 +1,4 @@
-from collections import OrderedDict
+from decimal import Decimal
 import re
 
 class ExpresionAlgebraica:
@@ -11,16 +11,7 @@ class ExpresionAlgebraica:
 
     def __init__(self, expresion: str) -> None:
         self.expresion = expresion
-        self.terminos = OrderedDict()
         self.parse_expresion(expresion)
-
-    @property
-    def coeficientes(self) -> list:
-        return list(self.terminos.values())
-
-    @property
-    def variables(self) -> list:
-        return list(self.terminos.keys())
 
     def parse_expresion(self, expresion: str) -> None:
         """
@@ -41,16 +32,18 @@ class ExpresionAlgebraica:
         self.signo: str = re.findall(r'[<>=]=?', expresion)[0]
 
         # Obtener los coeficientes y nombres de las variables del lado izquierdo
+        self.coeficientes, self.variables = [], []
         for termino in re.findall(r'([+-]?\s*\d*\s*\*?)\s*(\w+)', lado_izquierdo):
             coeficiente, variable = termino
             coeficiente: str = coeficiente.replace(' ', '').replace('*', '')
             if coeficiente not in ['', '+', '-']:
-                self.terminos[variable] = int(coeficiente)
+                self.coeficientes.append(Decimal(coeficiente))
             else:
-                self.terminos[variable] = int((coeficiente if coeficiente else '+') + '1')
+                self.coeficientes.append(Decimal((coeficiente if coeficiente else '+') + '1'))
+            self.variables.append(variable)
 
         # Obtener el término independiente del lado derecho
-        self.termino_independiente = int(lado_derecho.strip())
+        self.termino_independiente = Decimal(lado_derecho.strip())
 
     @staticmethod
     def es_una_expresion_algebraica(expresion: str) -> bool:
@@ -64,8 +57,5 @@ class ExpresionAlgebraica:
             - bool: True si la cadena de texto representa una expresión algebraica válida,
             False en caso contrario.
         """
-        try:
-            ExpresionAlgebraica(expresion)
-            return True
-        except:
-            return False
+        patron = r'^\s*[+-]?\s*\d*\s*\*?\s*\w+\s*([+-]\s*\d*\s*\*?\s*\w+\s*)*([<>=]=?)\s*[+-]?\d+\s*$'
+        return bool(re.match(patron, expresion))

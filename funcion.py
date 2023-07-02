@@ -1,4 +1,4 @@
-from collections import OrderedDict
+from decimal import Decimal
 import re
 
 class Funcion:
@@ -8,16 +8,11 @@ class Funcion:
 
     def __init__(self, funcion: str) -> None:
         self.funcion = funcion
-        self.terminos = OrderedDict()
         self.parse_funcion(funcion)
 
     @property
-    def coeficientes(self) -> list:
-        return list(self.terminos.values())
-
-    @property
-    def variables(self) -> list:
-        return list(self.terminos.keys())
+    def numero_de_variables(self) -> int:
+        return len(self.coeficientes)
 
     def parse_funcion(self, funcion: str) -> None:
         """
@@ -36,13 +31,15 @@ class Funcion:
         self.nombre_funcion = lado_izquierdo.strip()
 
         # Obtener los coeficientes y nombres de las variables del lado derecho
+        self.coeficientes, self.variables = [], []
         for termino in re.findall(r'([+-]?\s*\d*\s*\*?)\s*(\w+)', lado_derecho):
             coeficiente, variable = termino
             coeficiente: str = coeficiente.replace(' ', '').replace('*', '')
             if coeficiente not in ['', '+', '-']:
-                self.terminos[variable] = (int(coeficiente))
+                self.coeficientes.append(Decimal(coeficiente))
             else:
-                self.terminos[variable] = (int((coeficiente if coeficiente else '+') + '1'))
+                self.coeficientes.append(Decimal((coeficiente if coeficiente else '+') + '1'))
+            self.variables.append(variable)
 
     @staticmethod
     def es_una_funcion(funcion: str) -> bool:
