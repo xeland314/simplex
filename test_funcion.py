@@ -14,18 +14,21 @@ class TestFuncion(unittest.TestCase):
         self.assertEqual(f.coeficientes, [2, 1, -1])
         self.assertEqual(f.variables, ['x1', 'x2', 'x3'])
         self.assertEqual(f.nombre_funcion, 'f(x)')
+        self.assertEqual(f.representacion, 'f(x) = 2 * x1 + x2 - x3')
 
     def test_parse_funcion_2(self):
         f = FuncionObjetivo(self.funcion_2)
         self.assertEqual(f.coeficientes, [1, -3, 4])
         self.assertEqual(f.variables, ['x1', 'x2', 'x3'])
         self.assertEqual(f.nombre_funcion, 'y')
+        self.assertEqual(f.representacion, 'y = x1 - 3 * x2 + 4 * x3')
 
     def test_parse_funcion_3(self):
         f = FuncionObjetivo(self.funcion_3)
         self.assertEqual(f.coeficientes, [-2, 1])
         self.assertEqual(f.variables, ['x1', 'x2'])
         self.assertEqual(f.nombre_funcion, 'z')
+        self.assertEqual(f.representacion, 'z = - 2 * x1 + x2')
 
     def test_es_una_funcion(self):
         self.assertTrue(FuncionObjetivo.es_una_funcion(self.funcion_1))
@@ -36,6 +39,7 @@ class TestFuncion(unittest.TestCase):
         self.assertFalse(FuncionObjetivo.es_una_funcion("8 = 2*x1 + x2 - x3"))
         self.assertFalse(FuncionObjetivo.es_una_funcion("2*x1 + x2 - x3"))
         self.assertFalse(FuncionObjetivo.es_una_funcion("1 + 1"))
+        self.assertFalse(FuncionObjetivo.es_una_funcion("x = x + x1"))
 
 if __name__ == '__main__':
     unittest.main()

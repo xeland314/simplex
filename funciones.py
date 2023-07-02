@@ -27,20 +27,34 @@ class ExpresionMatematica(metaclass=ABCMeta):
         return self.orden_variables
 
     @abstractmethod
-    def _parse_expresion(self) -> None:
+    def _generar_representacion(self) -> None:
         pass
 
-    def __repr__(self) -> str:
-        return self.expresion
-
-    def __str__(self) -> str:
-        return self.expresion
+    @abstractmethod
+    def _parse_expresion(self) -> None:
+        pass
 
 class FuncionObjetivo(ExpresionMatematica):
 
     def __init__(self, expresion: str) -> None:
         super().__init__(expresion)
         self._parse_expresion()
+        self._generar_representacion()
+
+    def _generar_representacion(self) -> None:
+        self.representacion = f"{self.nombre_funcion} = "
+        terminos_str = []
+        for variable, coeficiente in self.terminos.items():
+            if coeficiente == 1:
+                terminos_str.append(f"{variable}")
+            elif coeficiente == -1:
+                terminos_str.append(f"- {variable}")
+            elif coeficiente < 0:
+                terminos_str.append(f"- {-coeficiente} * {variable}")
+            else:
+                terminos_str.append(f"{coeficiente} * {variable}")
+        self.representacion += " + ".join(terminos_str)
+        self.representacion = self.representacion.replace("+ -", "-")
 
     def _parse_expresion(self) -> None:
         """
@@ -82,9 +96,22 @@ class FuncionObjetivo(ExpresionMatematica):
         """
         # Verificar que la cadena contenga un signo igual
         # Definir la expresión regular para validar funciones algebraicas
-        funcion_regex = r'^\s*[a-zA-Z]+\d?\s*(\(\w+\d?\))?\s*=\s*([+-]?\s*\d*\*?\s*[a-zA-Z]+\d*\s*)+\s*$'
-        return bool(re.match(funcion_regex, funcion))
+        es_una_funcion = True
+        try:
+            f = FuncionObjetivo(funcion)
+            es_una_funcion &= f.nombre_funcion not in f.orden_variables
+        except Exception:
+            pass
+        finally:
+            funcion_regex = r'^\s*[a-zA-Z]+\d?\s*(\(\w+\d?\))?\s*=\s*([+-]?\s*\d*\*?\s*[a-zA-Z]+\d*\s*)+\s*$'
+            es_una_funcion &= bool(re.match(funcion_regex, funcion))
+        return es_una_funcion
 
+    def __repr__(self) -> str:
+        return f"FuncionObjetivo({self.representacion})"
+    
+    def __str__(self) -> str:
+        return self.representacion
 
 class ExpresionAlgebraica(ExpresionMatematica):
     """
@@ -97,6 +124,23 @@ class ExpresionAlgebraica(ExpresionMatematica):
     def __init__(self, expresion: str) -> None:
         super().__init__(expresion)
         self._parse_expresion()
+        self._generar_representacion()
+
+    def _generar_representacion(self) -> None:
+        self.representacion = ""
+        terminos_str = []
+        for variable, coeficiente in self.terminos.items():
+            if coeficiente == 1:
+                terminos_str.append(f"{variable}")
+            elif coeficiente == -1:
+                terminos_str.append(f"-{variable}")
+            elif coeficiente < 0:
+                terminos_str.append(f"-{-coeficiente} * {variable}")
+            else:
+                terminos_str.append(f"{coeficiente} * {variable}")
+        self.representacion = " + ".join(terminos_str)
+        self.representacion = self.representacion.replace(" + -", " - ")
+        self.representacion += f" {self.signo} {self.termino_independiente}"
 
     def _parse_expresion(self) -> None:
         """
@@ -144,3 +188,9 @@ class ExpresionAlgebraica(ExpresionMatematica):
         """
         patron = r'^\s*[+-]?\s*\d*\s*\*?\s*\w+\s*([+-]\s*\d*\s*\*?\s*\w+\s*)*([<>=]=?)\s*[+-]?\d+\s*$'
         return bool(re.match(patron, expresion))
+
+    def __repr__(self) -> str:
+        return f"ExpresionAlgebraica({self.representacion})"
+    
+    def __str__(self) -> str:
+        return self.representacion

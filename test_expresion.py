@@ -17,6 +17,7 @@ class TestExpresionAlgebraica(unittest.TestCase):
         self.assertEqual(exp.variables, ['x1', 'x2', 'x3'])
         self.assertEqual(exp.signo, '=')
         self.assertEqual(exp.termino_independiente, 8)
+        self.assertEqual(exp.representacion, "2 * x1 + x2 - x3 = 8")
 
     def test_parse_expresion_2(self):
         exp = ExpresionAlgebraica(self.expresion_2)
@@ -24,6 +25,7 @@ class TestExpresionAlgebraica(unittest.TestCase):
         self.assertEqual(exp.variables, ['x1', 'x2', 'x3'])
         self.assertEqual(exp.signo, '>=')
         self.assertEqual(exp.termino_independiente, -2)
+        self.assertEqual(exp.representacion, "x1 - 3 * x2 + 4 * x3 >= -2")
 
     def test_parse_expresion_3(self):
         exp = ExpresionAlgebraica(self.expresion_3)
@@ -31,6 +33,7 @@ class TestExpresionAlgebraica(unittest.TestCase):
         self.assertEqual(exp.variables, ['x1', 'x2'])
         self.assertEqual(exp.signo, '<=')
         self.assertEqual(exp.termino_independiente, 5)
+        self.assertEqual(exp.representacion, "-2 * x1 + x2 <= 5")
 
     def test_parse_expresion_4(self):
         exp = ExpresionAlgebraica(self.expresion_4)
@@ -38,6 +41,7 @@ class TestExpresionAlgebraica(unittest.TestCase):
         self.assertEqual(exp.variables, ['x1', 'x2'])
         self.assertEqual(exp.signo, '>')
         self.assertEqual(exp.termino_independiente, 5)
+        self.assertEqual(exp.representacion, "-2 * x1 + x2 > 5")
 
     def test_parse_expresion_5(self):
         exp = ExpresionAlgebraica(self.expresion_5)
@@ -45,6 +49,7 @@ class TestExpresionAlgebraica(unittest.TestCase):
         self.assertEqual(exp.variables, ['x1', 'x2'])
         self.assertEqual(exp.signo, '<')
         self.assertEqual(exp.termino_independiente, 5)
+        self.assertEqual(exp.representacion, "-2 * x1 + x2 < 5")
 
     def test_zero_expresion(self):
         exp = ExpresionAlgebraica("0x1 + x2 + 0*x3 = 2")
@@ -52,6 +57,7 @@ class TestExpresionAlgebraica(unittest.TestCase):
         self.assertEqual(exp.variables, ['x1', 'x2', 'x3'])
         self.assertEqual(exp.signo, '=')
         self.assertEqual(exp.termino_independiente, 2)
+        self.assertEqual(exp.representacion, "0 * x1 + x2 + 0 * x3 = 2")
 
     def test_es_una_expresion_algebraica(self):
         self.assertTrue(ExpresionAlgebraica.es_una_expresion_algebraica(self.expresion_1))

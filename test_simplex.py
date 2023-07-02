@@ -158,6 +158,31 @@ class TestSimplex3(TestSimplexBase, unittest.TestCase):
             "x4": Decimal("0.6")
         }
 
+class TestSimplex3_1(TestSimplexBase, unittest.TestCase):
+
+    def setUp(self):
+        self.simplex = Simplex(
+            numero_de_variables=4,
+            funcion_objetivo=FuncionObjetivo("z = x1"),
+            metodo=Simplex.MAXIMIZAR,
+            numero_de_reestricciones=3,
+            restricciones=[
+                ExpresionAlgebraica("5*x1 + s1 = 4"),
+                ExpresionAlgebraica("6*x1 + s2 = 8"),
+                ExpresionAlgebraica("3*x1 + s3 = 3"),
+            ]
+        )
+        self.simplex.resolver_problema()
+
+    def obtener_soluciones(self):
+        return {
+            "z": Decimal("0.8"),
+            "x1": Decimal("0.8"),
+            "s1": Decimal("0"),
+            "s2": Decimal("3.2"),
+            "s3": Decimal("0.6")
+        }
+
 class TestSimplex4(TestSimplexBase, unittest.TestCase):
 
     def setUp(self):
@@ -181,6 +206,23 @@ class TestSimplex4(TestSimplexBase, unittest.TestCase):
             "x4": Decimal("0"),
             "x5": Decimal("0")
         }
+
+class TestErrorSimplex(unittest.TestCase):
+
+    def test_raise_value_error(self):
+        simplex = Simplex(
+            numero_de_variables=5,
+            funcion_objetivo=FuncionObjetivo("z = 5x1 - 6x2 + 3x3 - 5x4 + 12x5"),
+            metodo=Simplex.MAXIMIZAR,
+            numero_de_reestricciones=2,
+            restricciones=[
+                ExpresionAlgebraica("x1 + 3x2 + 5x3 + 6x4 + 3x5 <= 90"),
+                ExpresionAlgebraica("x1 + 3x2 + 5t3 + 6x4 + 3x5 <= 90"),
+            ]
+        )
+        self.assertRaises(
+            ValueError, simplex.resolver_problema
+        )
 
 if __name__ == '__main__':
     unittest.main()

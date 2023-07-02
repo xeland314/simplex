@@ -14,6 +14,7 @@ class Simplex:
     MINIMIZAR = 0
     MAXIMIZAR = 1
     PRECISION = Decimal('0.000001')
+    VARIABLE_POR_DEFECTO = "s"
 
     def __init__(self,
         numero_de_variables = 0,
@@ -56,14 +57,14 @@ class Simplex:
             print("a, b, c son números.")
             entrada = input("Ingrese la función objetivo: ")
         self.funcion_objetivo = FuncionObjetivo(entrada)
-        self.__verificar_funcion_objetivo()
 
-    def __verificar_funcion_objetivo(self) -> None:
+    def __completar_funcion_objetivo(self) -> None:
         if self.funcion_objetivo.numero_de_variables != self.numero_de_variables:
-            limpiar_terminal()
-            print("¡Ingrese una función objetivo con el número de variables adecuadas!")
-            input("Pulse cualquier tecla para continuar...")
-            self.__ingresar_funcion_objetivo()
+            variables_faltantes = self.numero_de_variables - self.funcion_objetivo.numero_de_variables
+            for valor in range(variables_faltantes):
+                self.funcion_objetivo.orden_variables.append(
+                    f"{self.VARIABLE_POR_DEFECTO}{valor + 1}"
+                )
 
     def __seleccionar_metodo(self) -> None:
         while(not(self.metodo == self.MAXIMIZAR or self.metodo == self.MINIMIZAR)):
@@ -104,7 +105,23 @@ class Simplex:
                 continue
             restriccion.orden_variables = self.funcion_objetivo.variables
 
+    def __verificar_restricciones(self) -> None:
+        variables_f = set(self.funcion_objetivo.variables)
+        for restriccion in self.restricciones:
+            variables_r = set(restriccion.variables)
+            if not variables_r.issubset(variables_f):
+                variables = variables_r.difference(variables_f)
+                raise ValueError(
+                    f"Las variable{'s' if len(variables) > 1 else ''} {variables} "
+                    f"de la restriccion {restriccion} "
+                    f"no existe{'n' if len(variables) > 1 else ''} "
+                    f"en la función objetivo: {self.funcion_objetivo}.\n"
+                    "No se puede continuar con la ejecución del programa."
+                )
+
     def __preparar_datos(self) -> None:
+        self.__completar_funcion_objetivo()
+        self.__verificar_restricciones()
         self.__completar_restricciones()
         self.c = self.funcion_objetivo.coeficientes
         self.c = [-ci for ci in self.c]
@@ -151,17 +168,15 @@ class Simplex:
             self.c, A_ub=self.A, b_ub=self.b,
             bounds=self.bounds, method='highs'
         )
-        
+
         #Guardar valores óptimos
         self.valores_optimos = []
         valor = -self.respuesta.fun
-        valor = Decimal(valor)
-        valor = valor.quantize(self.PRECISION, ROUND_HALF_UP)
-        self.valores_optimos.append((self.funcion_objetivo.nombre_funcion, valor))
+        valor = Decimal(valor).quantize(self.PRECISION, ROUND_HALF_UP)
+        self.valores_optimos.append((self.funcion_objetivo.nombre_funcion, valor.normalize()))
         for variable, valor in zip(self.funcion_objetivo.variables, self.respuesta.x):
-            valor = Decimal(valor)
-            valor = valor.quantize(self.PRECISION, ROUND_HALF_UP)
-            self.valores_optimos.append((variable, valor))
+            valor = Decimal(valor).quantize(self.PRECISION, ROUND_HALF_UP)
+            self.valores_optimos.append((variable, valor.normalize()))
 
     def mostrar_resultados(self) -> None:
         limpiar_terminal()
