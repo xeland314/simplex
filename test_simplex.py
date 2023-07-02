@@ -14,6 +14,7 @@ class TestSimplexBase(ABC):
         """
         pass
 
+
     def test_comprobar_valores_optimos(self):
         """
         Se comprueban las soluciones del sistema.
@@ -40,7 +41,6 @@ class TestSimplex1(TestSimplexBase, unittest.TestCase):
             numero_de_variables=6,
             funcion_objetivo=FuncionObjetivo("z = 5x1 + 4x2 + 0s1 + 0s2 + 0s3 + 0s4"),
             metodo=Simplex.MAXIMIZAR,
-            numero_de_reestricciones=4,
             restricciones=[
                 ExpresionAlgebraica("6x1 + 4x2 + s1 = 24"),
                 ExpresionAlgebraica("x1 + 2x2 + s2 = 6"),
@@ -49,6 +49,7 @@ class TestSimplex1(TestSimplexBase, unittest.TestCase):
             ]
         )
         self.simplex.resolver_problema()
+        self.simplex.mostrar_resultados()
 
     def obtener_soluciones(self):
         return {
@@ -68,7 +69,6 @@ class TestSimplex2(TestSimplexBase, unittest.TestCase):
             numero_de_variables=4,
             funcion_objetivo=FuncionObjetivo("z = 2x1 + x2 - 3x3 + 5x4"),
             metodo=Simplex.MAXIMIZAR,
-            numero_de_reestricciones=3,
             restricciones=[
                 ExpresionAlgebraica("x1 + 2x2 + 2x3 + 4x4 <= 40"),
                 ExpresionAlgebraica("2x1 - x2 + x3 + 2x4 <= 8"),
@@ -126,11 +126,11 @@ class TestSimplex2_3(TestSimplex2):
         self.simplex.metodo = self.simplex.MINIMIZAR
         self.simplex.resolver_problema()
         return {
-            "z": Decimal("60"),
+            "z": Decimal("-80"),
             "x1": Decimal("0"),
             "x2": Decimal("6"),
-            "x3": Decimal("14"),
-            "x4": Decimal("0")
+            "x3": Decimal("0"),
+            "x4": Decimal("7")
         }
 
 class TestSimplex3(TestSimplexBase, unittest.TestCase):
@@ -140,7 +140,6 @@ class TestSimplex3(TestSimplexBase, unittest.TestCase):
             numero_de_variables=4,
             funcion_objetivo=FuncionObjetivo("z = x1+0*x2+0*x3+0*x4"),
             metodo=Simplex.MAXIMIZAR,
-            numero_de_reestricciones=3,
             restricciones=[
                 ExpresionAlgebraica("5*x1 + x2 = 4"),
                 ExpresionAlgebraica("6*x1 + x3 = 8"),
@@ -165,7 +164,6 @@ class TestSimplex3_1(TestSimplexBase, unittest.TestCase):
             numero_de_variables=4,
             funcion_objetivo=FuncionObjetivo("z = x1"),
             metodo=Simplex.MAXIMIZAR,
-            numero_de_reestricciones=3,
             restricciones=[
                 ExpresionAlgebraica("5*x1 + s1 = 4"),
                 ExpresionAlgebraica("6*x1 + s2 = 8"),
@@ -183,6 +181,30 @@ class TestSimplex3_1(TestSimplexBase, unittest.TestCase):
             "s3": Decimal("0.6")
         }
 
+class TestSimplex3_2(TestSimplexBase, unittest.TestCase):
+
+    def setUp(self):
+        self.simplex = Simplex(
+            numero_de_variables=4,
+            funcion_objetivo=FuncionObjetivo("z = x1"),
+            metodo=Simplex.MINIMIZAR,
+            restricciones=[
+                ExpresionAlgebraica("5*x1 + s1 = 4"),
+                ExpresionAlgebraica("6*x1 + s2 = 8"),
+                ExpresionAlgebraica("3*x1 + s3 = 3"),
+            ]
+        )
+        self.simplex.resolver_problema()
+
+    def obtener_soluciones(self):
+        return {
+            "z": Decimal("0"),
+            "x1": Decimal("0"),
+            "s1": Decimal("4"),
+            "s2": Decimal("8"),
+            "s3": Decimal("3")
+        }
+
 class TestSimplex4(TestSimplexBase, unittest.TestCase):
 
     def setUp(self):
@@ -190,7 +212,6 @@ class TestSimplex4(TestSimplexBase, unittest.TestCase):
             numero_de_variables=5,
             funcion_objetivo=FuncionObjetivo("z = 5x1 - 6x2 + 3x3 - 5x4 + 12x5"),
             metodo=Simplex.MAXIMIZAR,
-            numero_de_reestricciones=1,
             restricciones=[
                 ExpresionAlgebraica("x1 + 3x2 + 5x3 + 6x4 + 3x5 <= 90"),
             ]
@@ -214,7 +235,6 @@ class TestErrorSimplex(unittest.TestCase):
             numero_de_variables=5,
             funcion_objetivo=FuncionObjetivo("z = 5x1 - 6x2 + 3x3 - 5x4 + 12x5"),
             metodo=Simplex.MAXIMIZAR,
-            numero_de_reestricciones=2,
             restricciones=[
                 ExpresionAlgebraica("x1 + 3x2 + 5x3 + 6x4 + 3x5 <= 90"),
                 ExpresionAlgebraica("x1 + 3x2 + 5t3 + 6x4 + 3x5 <= 90"),

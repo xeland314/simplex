@@ -20,13 +20,12 @@ class Simplex:
         numero_de_variables = 0,
         funcion_objetivo: FuncionObjetivo = None,
         metodo = -1,
-        numero_de_reestricciones = 0,
         restricciones: list[ExpresionAlgebraica] = []
     ):
         self.numero_de_variables = numero_de_variables
         self.funcion_objetivo = funcion_objetivo
         self.metodo = metodo
-        self.numero_de_reestricciones = numero_de_reestricciones
+        self.numero_de_reestricciones = len(restricciones)
         self.restricciones = restricciones
         self.A, self.b, self.c = [], [], []
 
@@ -123,8 +122,10 @@ class Simplex:
         self.__completar_funcion_objetivo()
         self.__verificar_restricciones()
         self.__completar_restricciones()
+        self.A.clear(), self.b.clear()
         self.c = self.funcion_objetivo.coeficientes
-        self.c = [-ci for ci in self.c]
+        if self.metodo == self.MAXIMIZAR:
+            self.c = [-ci for ci in self.c]
         for restriccion in self.restricciones:
             fila = restriccion.coeficientes
             signo = restriccion.signo
@@ -158,6 +159,26 @@ class Simplex:
                 self.A.append([-aij for aij in fila])
                 self.b.append(-self.b[-1])
 
+    def imprimir_problema(self) -> None:
+        title = (
+            f"{'Maximizar' if self.metodo == self.MAXIMIZAR else 'Minimizar'} "
+            f"[dark_blue]{self.funcion_objetivo}[/dark_blue]"
+        )
+        table = Table(title=title, title_justify="left")
+        table.add_column(header="Restricciones", justify="left", style="deep_sky_blue3")
+        table.add_column(header=f"{self.funcion_objetivo.variables}", justify="center", style="green")
+        table.add_column(header="<=>", justify="center", style="deep_pink3")
+        table.add_column(header="b", justify="center", style="green")
+        for restriccion in self.restricciones:
+            table.add_row(
+                str(restriccion),
+                str([str(valor) for valor in restriccion.coeficientes]),
+                restriccion.signo,
+                str(restriccion.termino_independiente)
+            )
+        console = Console()
+        console.print(table)
+
     def resolver_problema(self) -> None:
         self.__preparar_datos()
         # Definir los límites de las variables
@@ -171,15 +192,28 @@ class Simplex:
 
         #Guardar valores óptimos
         self.valores_optimos = []
-        valor = -self.respuesta.fun
+        valor = -self.respuesta.fun if self.metodo == self.MAXIMIZAR else self.respuesta.fun
         valor = Decimal(valor).quantize(self.PRECISION, ROUND_HALF_UP)
         self.valores_optimos.append((self.funcion_objetivo.nombre_funcion, valor.normalize()))
         for variable, valor in zip(self.funcion_objetivo.variables, self.respuesta.x):
             valor = Decimal(valor).quantize(self.PRECISION, ROUND_HALF_UP)
             self.valores_optimos.append((variable, valor.normalize()))
 
+    def __mostrar_datos_preparados(self) -> None:
+        table = Table(title="Preparación de datos", title_justify="center")
+        table.add_column(header="A", justify="left", style="deep_sky_blue3")
+        table.add_column(header="b", justify="right", style="deep_sky_blue3")
+        for fila, valor in zip(self.A, self.b):
+            table.add_row(str([str(valor) for valor in fila]), str(valor))
+        c_valores = [str(valor) for valor in self.c]
+        table.add_section()
+        table.add_row(str(c_valores),"0")
+        console = Console()
+        console.print(table)
+
     def mostrar_resultados(self) -> None:
-        limpiar_terminal()
+        self.imprimir_problema()
+        self.__mostrar_datos_preparados()
         if not self.respuesta.success:
             print('No se pudo encontrar una solución óptima.')
             return
