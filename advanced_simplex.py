@@ -35,7 +35,6 @@ class Simplex:
         self.__seleccionar_metodo()
         self.__ingresar_numero_de_restricciones()
         self.__ingresar_restricciones()
-        self.preparar_datos()
         self.resolver_problema()
         self.mostrar_resultados()
 
@@ -105,11 +104,10 @@ class Simplex:
                 continue
             restriccion.orden_variables = self.funcion_objetivo.variables
 
-    def preparar_datos(self) -> None:
+    def __preparar_datos(self) -> None:
         self.__completar_restricciones()
         self.c = self.funcion_objetivo.coeficientes
-        if self.metodo == self.MAXIMIZAR:
-            self.c = [-ci for ci in self.c]
+        self.c = [-ci for ci in self.c]
         for restriccion in self.restricciones:
             fila = restriccion.coeficientes
             signo = restriccion.signo
@@ -144,6 +142,7 @@ class Simplex:
                 self.b.append(-self.b[-1])
 
     def resolver_problema(self) -> None:
+        self.__preparar_datos()
         # Definir los límites de las variables
         self.bounds = [(0, None) for _ in range(self.numero_de_variables)]
 
@@ -152,6 +151,17 @@ class Simplex:
             self.c, A_ub=self.A, b_ub=self.b,
             bounds=self.bounds, method='highs'
         )
+        
+        #Guardar valores óptimos
+        self.valores_optimos = []
+        valor = -self.respuesta.fun
+        valor = Decimal(valor)
+        valor = valor.quantize(self.PRECISION, ROUND_HALF_UP)
+        self.valores_optimos.append((self.funcion_objetivo.nombre_funcion, valor))
+        for variable, valor in zip(self.funcion_objetivo.variables, self.respuesta.x):
+            valor = Decimal(valor)
+            valor = valor.quantize(self.PRECISION, ROUND_HALF_UP)
+            self.valores_optimos.append((variable, valor))
 
     def mostrar_resultados(self) -> None:
         limpiar_terminal()
@@ -162,13 +172,7 @@ class Simplex:
         table = Table(title="Resultados", title_justify="center")
         table.add_column(header="Variables", justify="center", style="magenta")
         table.add_column(header="Valores óptimos", justify="left", style="green")
-        valor = -self.respuesta.fun if self.metodo == self.MAXIMIZAR else self.respuesta.fun
-        valor = Decimal(valor)
-        valor = valor.quantize(self.PRECISION, ROUND_HALF_UP)
-        table.add_row(self.funcion_objetivo.nombre_funcion, str(valor))
-        for variable, valor in zip(self.funcion_objetivo.variables, self.respuesta.x):
-            valor = Decimal(valor)
-            valor = valor.quantize(self.PRECISION, ROUND_HALF_UP)
+        for variable, valor in self.valores_optimos:
             table.add_row(variable, str(valor))
         console = Console()
         console.print(table)
