@@ -5,8 +5,7 @@ from rich.console import Console
 from rich.table import Table
 from scipy.optimize import linprog
 
-from expresion import ExpresionAlgebraica
-from funcion import Funcion
+from funciones import ExpresionAlgebraica, FuncionObjetivo
 
 limpiar_terminal = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -16,18 +15,31 @@ class Simplex:
     MAXIMIZAR = 1
     PRECISION = Decimal('0.000001')
 
+    def __init__(self,
+        numero_de_variables = 0,
+        funcion_objetivo: FuncionObjetivo = None,
+        metodo = -1,
+        numero_de_reestricciones = 0,
+        restricciones: list[ExpresionAlgebraica] = []
+    ):
+        self.numero_de_variables = numero_de_variables
+        self.funcion_objetivo = funcion_objetivo
+        self.metodo = metodo
+        self.numero_de_reestricciones = numero_de_reestricciones
+        self.restricciones = restricciones
+        self.A, self.b, self.c = [], [], []
+
     def __call__(self):
         self.__ingresar_numero_de_variables()
         self.__ingresar_funcion_objetivo()
         self.__seleccionar_metodo()
         self.__ingresar_numero_de_restricciones()
         self.__ingresar_restricciones()
-        self.__preparar_datos()
-        self.__resolver_problema()
+        self.preparar_datos()
+        self.resolver_problema()
         self.mostrar_resultados()
 
     def __ingresar_numero_de_variables(self) -> None:
-        self.numero_de_variables = 0
         while(self.numero_de_variables <= 0):
             limpiar_terminal()
             try:
@@ -39,16 +51,22 @@ class Simplex:
 
     def __ingresar_funcion_objetivo(self) -> None:
         entrada: str = ""
-        while(not Funcion.es_una_funcion(entrada)):
+        while(not FuncionObjetivo.es_una_funcion(entrada)):
             limpiar_terminal()
             print("Formato de la función: z = ax1 + bx2 + ... + cxn")
             print("a, b, c son números.")
             entrada = input("Ingrese la función objetivo: ")
-        self.funcion_objetivo = Funcion(entrada)
-        self.c = self.funcion_objetivo.coeficientes
+        self.funcion_objetivo = FuncionObjetivo(entrada)
+        self.__verificar_funcion_objetivo()
+
+    def __verificar_funcion_objetivo(self) -> None:
+        if self.funcion_objetivo.numero_de_variables != self.numero_de_variables:
+            limpiar_terminal()
+            print("¡Ingrese una función objetivo con el número de variables adecuadas!")
+            input("Pulse cualquier tecla para continuar...")
+            self.__ingresar_funcion_objetivo()
 
     def __seleccionar_metodo(self) -> None:
-        self.metodo = -1
         while(not(self.metodo == self.MAXIMIZAR or self.metodo == self.MINIMIZAR)):
             limpiar_terminal()
             try:
@@ -57,11 +75,8 @@ class Simplex:
                 )
             except Exception:
                 pass
-        if self.metodo == self.MAXIMIZAR:
-            self.c = [-ci for ci in self.c]
 
     def __ingresar_numero_de_restricciones(self) -> None:
-        self.numero_de_reestricciones = 0
         while(self.numero_de_reestricciones <= 0):
             limpiar_terminal()
             try:
@@ -72,7 +87,6 @@ class Simplex:
                 pass
 
     def __ingresar_restricciones(self) -> None:
-        self.restricciones: list[ExpresionAlgebraica] = []
         for r in range(self.numero_de_reestricciones):
             entrada: str = ""
             while(not ExpresionAlgebraica.es_una_expresion_algebraica(entrada)):
@@ -85,8 +99,17 @@ class Simplex:
             )
         limpiar_terminal()
 
-    def __preparar_datos(self) -> None:
-        self.A, self.b = [], []
+    def __completar_restricciones(self) -> None:
+        for restriccion in self.restricciones:
+            if restriccion.variables == self.funcion_objetivo.variables:
+                continue
+            restriccion.orden_variables = self.funcion_objetivo.variables
+
+    def preparar_datos(self) -> None:
+        self.__completar_restricciones()
+        self.c = self.funcion_objetivo.coeficientes
+        if self.metodo == self.MAXIMIZAR:
+            self.c = [-ci for ci in self.c]
         for restriccion in self.restricciones:
             fila = restriccion.coeficientes
             signo = restriccion.signo
@@ -120,7 +143,7 @@ class Simplex:
                 self.A.append([-aij for aij in fila])
                 self.b.append(-self.b[-1])
 
-    def __resolver_problema(self) -> None:
+    def resolver_problema(self) -> None:
         # Definir los límites de las variables
         self.bounds = [(0, None) for _ in range(self.numero_de_variables)]
 

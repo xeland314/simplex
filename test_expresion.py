@@ -1,6 +1,6 @@
 import unittest
 
-from expresion import ExpresionAlgebraica
+from funciones import ExpresionAlgebraica
 
 class TestExpresionAlgebraica(unittest.TestCase):
 
@@ -66,6 +66,31 @@ class TestExpresionAlgebraica(unittest.TestCase):
         self.assertFalse(ExpresionAlgebraica.es_una_expresion_algebraica("x1 + x2 ="))
         self.assertFalse(ExpresionAlgebraica.es_una_expresion_algebraica("x1 + x2 = x3"))
         self.assertFalse(ExpresionAlgebraica.es_una_expresion_algebraica("x1 + x2 = 1 + x3"))
+
+    # Tests that the method returns 1 for an equation with a single variable
+    def test_single_variable(self):
+        expresion = ExpresionAlgebraica('2x = 4')
+        self.assertEqual(expresion.numero_de_variables, 1)
+
+    # Tests that the method returns the correct number of variables for an equation with multiple variables
+    def test_multiple_variables(self):
+        expresion = ExpresionAlgebraica('2x + 3y - 4z = 5')
+        self.assertEqual(expresion.numero_de_variables, 3)
+
+    # Tests that the method returns the correct number of variables for a complex equation with multiple variables and coefficients
+    def test_complex_equation(self):
+        expresion = ExpresionAlgebraica('2x + 3y - 4z + 5w - 6u = 7')
+        self.assertEqual(expresion.numero_de_variables, 5)
+
+    # Tests that the method returns 0 for an equation with no coefficients
+    def test_no_coefficients(self):
+        expresion = ExpresionAlgebraica('x + y + z = 5')
+        self.assertEqual(expresion.numero_de_variables, 3)
+
+    def test_coeficientes_repetidos(self):
+        expresion = ExpresionAlgebraica("x1 + x1 + x1 = 2")
+        self.assertEqual(expresion.numero_de_variables, 1)
+        self.assertEqual(expresion.coeficientes, [3,])
 
 if __name__ == '__main__':
     unittest.main()
