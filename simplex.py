@@ -57,7 +57,7 @@ def simplex():
             # agregar restricción de tipo -Ax <= -b
             A.append([-aij for aij in row])
             b.append(-b[-1])
-    
+
     # Definir los límites de las variables
     bounds = [(0, None) for _ in range(n_vars)]
 

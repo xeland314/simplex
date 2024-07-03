@@ -11,15 +11,15 @@ limpiar_terminal = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 
 class Simplex:
 
-    MINIMIZAR = 0
-    MAXIMIZAR = 1
+    MINIMIZAR: int = 0
+    MAXIMIZAR: int = 1
     PRECISION = Decimal('0.000001')
-    VARIABLE_POR_DEFECTO = "s"
+    VARIABLE_POR_DEFECTO: str = "s"
 
     def __init__(self,
         numero_de_variables = 0,
         funcion_objetivo: FuncionObjetivo = None,
-        metodo = -1,
+        metodo: int = MAXIMIZAR | MINIMIZAR,
         restricciones: list[ExpresionAlgebraica] = []
     ):
         self.numero_de_variables = numero_de_variables
@@ -183,7 +183,6 @@ class Simplex:
         self.__preparar_datos()
         # Definir los límites de las variables
         self.bounds = [(0, None) for _ in range(self.numero_de_variables)]
-
         # Resolver el problema de programación lineal
         self.respuesta = linprog(
             self.c, A_ub=self.A, b_ub=self.b,
