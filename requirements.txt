@@ -86,7 +86,7 @@ stack-data==0.6.2
 sympy==1.12
 terminado==0.17.1
 tinycss2==1.2.1
-tornado==6.3.2
+tornado==6.4.1
 traitlets==5.9.0
 typing_extensions==4.7.0
 uri-template==1.3.0
