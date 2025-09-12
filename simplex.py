@@ -1,77 +1,77 @@
 from scipy.optimize import linprog
 
 def simplex():
-    # Pedir el número de variables
-    n_vars = int(input('Ingrese el número de variables: '))
+    # Ask for the number of variables
+    n_vars = int(input('Enter the number of variables: '))
 
-    # Pedir la función objetivo
+    # Ask for the objective function
     c = [0] * n_vars
-    print('Ingrese los coeficientes de la función objetivo:')
+    print('Enter the coefficients of the objective function:')
     for i in range(n_vars):
         c[i] = float(input(f'x{i+1}: '))
 
-    # Elegir si se va a maximizar o minimizar
-    max_min = int(input('¿Desea maximizar (1) o minimizar (0) la función objetivo?: '))
+    # Choose whether to maximize or minimize
+    max_min = int(input('Do you want to maximize (1) or minimize (0) the objective function?: '))
 
-    # Invertir el sentido de la función objetivo si se va a minimizar
+    # Invert the sense of the objective function if it is to be minimized
     if max_min == 1:
         c = [-ci for ci in c]
 
-    # Pedir el número de n_constr
-    n_constr = int(input('Ingrese el número de restricciones: '))
+    # Ask for the number of constraints
+    n_constr = int(input('Enter the number of constraints: '))
 
-    # Pedir las n_constr y su desigualdad
+    # Ask for the constraints and their inequality
     A = []
     b = []
-    print('Ingrese las restricciones:')
+    print('Enter the constraints:')
     for i in range(n_constr):
-        print(f'Restricción {i+1}:')
+        print(f'Constraint {i+1}:')
         row = [float(input(f'x{j+1}: ')) for j in range(n_vars)]
-        inequality = input('Desigualdad (<=, >=, <, > o =): ')
+        inequality = input('Inequality (<=, >=, <, > or =): ')
         if inequality == '<=':
-            # la restricción es del tipo Ax <= b
+            # the constraint is of the type Ax <= b
             A.append(row)
             b.append(float(input('b: ')))
         elif inequality == '>=':
-            # la restricción es del tipo Ax >= b,
-            # se multiplica todo por -1
+            # the constraint is of the type Ax >= b,
+            # everything is multiplied by -1
             A.append([-aij for aij in row])
             b.append(-float(input('b: ')))
         elif inequality == '<':
-            # la restricción es del tipo Ax < b,
-            # se resta un pequeño valor a b
-            # para convertirla en Ax <= b - epsilon
+            # the constraint is of the type Ax < b,
+            # a small value is subtracted from b
+            # to convert it to Ax <= b - epsilon
             A.append(row)
             b.append(float(input('b: ')) - 1e-6)
         elif inequality == '>':
-            # la restricción es del tipo Ax > b,
-            # se multiplica todo por -1
-            # y se resta un pequeño valor a b
-            # para convertirla en -Ax <= -b + epsilon
+            # the constraint is of the type Ax > b,
+            # everything is multiplied by -1
+            # and a small value is subtracted from b
+            # to convert it to -Ax <= -b + epsilon
             A.append([-aij for aij in row])
             b.append(-float(input('b: ')) + 1e-6)
         elif inequality == '=':
-            # la restricción es del tipo Ax = b
+            # the constraint is of the type Ax = b
             A.append(row)
             b.append(float(input('b: ')))
-            # agregar restricción de tipo -Ax <= -b
+            # add constraint of type -Ax <= -b
             A.append([-aij for aij in row])
             b.append(-b[-1])
 
-    # Definir los límites de las variables
+    # Define the bounds of the variables
     bounds = [(0, None) for _ in range(n_vars)]
 
-    # Resolver el problema de programación lineal
-    respuesta = linprog(c, A_ub=A, b_ub=b, bounds=bounds, method='highs')
+    # Solve the linear programming problem
+    response = linprog(c, A_ub=A, b_ub=b, bounds=bounds, method='highs')
 
-    # Imprimir resultado si se encontró una solución óptima
-    if respuesta.success:
-        print(f'Óptimo de la función objetivo: {-respuesta.fun if max_min == 1 else respuesta.fun}')
-        print(f'Óptimos de las variables: {respuesta.x}')
+    # Print result if an optimal solution was found
+    if response.success:
+        print(f'Optimum of the objective function: {-response.fun if max_min == 1 else response.fun}')
+        print(f'Optimal variables: {response.x}')
     else:
-        print('No se pudo encontrar una solución óptima.')
+        print('Could not find an optimal solution.')
 
-    print(respuesta)
+    print(response)
 
 if __name__ == '__main__':
     simplex()

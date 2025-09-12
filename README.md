@@ -1,70 +1,70 @@
 # Simplex
 
-## Ejemplo de uso práctico
+## Practical use case
 
-Supongamos que tienes una empresa que produce dos productos, A y B. Cada unidad de producto A que produces te genera una ganancia de $3 y cada unidad de producto B te genera una ganancia de $4. Quieres maximizar tus ganancias totales.
+Suppose you have a company that produces two products, A and B. Each unit of product A that you produce generates a profit of $3 and each unit of product B generates a profit of $4. You want to maximize your total profits.
 
-Sin embargo, tienes algunas restricciones en la producción. Cada unidad de producto A requiere 2 horas de trabajo y cada unidad de producto B requiere 3 horas de trabajo. Tienes un total de 100 horas de trabajo disponibles. Además, cada unidad de producto A requiere 1 kg de materia prima y cada unidad de producto B requiere 2 kg de materia prima. Tienes un total de 80 kg de materia prima disponibles.
+However, you have some production constraints. Each unit of product A requires 2 hours of labor and each unit of product B requires 3 hours of labor. You have a total of 100 hours of labor available. In addition, each unit of product A requires 1 kg of raw material and each unit of product B requires 2 kg of raw material. You have a total of 80 kg of raw material available.
 
-Este problema se puede formular como un problema de programación lineal con la siguiente función objetivo y restricciones:
+This problem can be formulated as a linear programming problem with the following objective function and constraints:
 
 ```
-Maximizar: 3A + 4B
-Sujeto a:
+Maximize: 3A + 4B
+Subject to:
     2A + 3B <= 100
     A + 2B <= 80
     A >= 0
     B >= 0
 ```
 
-Donde `A` y `B` representan el número de unidades producidas de los productos A y B, respectivamente.
+Where `A` and `B` represent the number of units produced of products A and B, respectively.
 
-Para resolver este problema utilizando el programa en Python que te proporcioné anteriormente, puedes ingresar los siguientes valores cuando se te soliciten:
+To solve this problem using the Python program I provided earlier, you can enter the following values when prompted:
 
-- Número de variables: `2`
-- Coeficientes de la función objetivo: `3` y `4`
-- Maximizar o minimizar: `1` (maximizar)
-- Número de restricciones: `2`
-- Restricción 1:
-    - Coeficientes: `2` y `3`
-    - Desigualdad: `<=`
-    - Valor de `b`: `100`
-- Restricción 2:
-    - Coeficientes: `1` y `2`
-    - Desigualdad: `<=`
-    - Valor de `b`: `80`
+- Number of variables: `2`
+- Objective function coefficients: `3` and `4`
+- Maximize or minimize: `1` (maximize)
+- Number of constraints: `2`
+- Constraint 1:
+    - Coefficients: `2` and `3`
+    - Inequality: `<=`
+    - Value of `b`: `100`
+- Constraint 2:
+    - Coefficients: `1` and `2`
+    - Inequality: `<=`
+    - Value of `b`: `80`
 
-Después de ingresar estos valores, el programa resolverá el problema y te mostrará la solución óptima. En este caso, la solución óptima es producir 20 unidades del producto A y 30 unidades del producto B para obtener una ganancia máxima de $180.
+After entering these values, the program will solve the problem and show you the optimal solution. In this case, the optimal solution is to produce 20 units of product A and 30 units of product B to obtain a maximum profit of $180.
 
-- Número de variables: `2`
-- Coeficientes de la función objetivo: `4` y `1`
-- Maximizar o minimizar: `0` (minimizar)
-- Número de restricciones: `3`
-- Restricción 1:
-    - Coeficientes: `3` y `1`
-    - Desigualdad: `=`
-    - Valor de `b`: `3`
-- Restricción 2:
-    - Coeficientes: `4` y `3`
-    - Desigualdad: `>=`
-    - Valor de `b`: `6`
-- Restricción 3:
-    - Coeficientes: `1` y `2`
-    - Desigualdad: `<=`
-    - Valor de `b`: `4`
+- Number of variables: `2`
+- Objective function coefficients: `4` and `1`
+- Maximize or minimize: `0` (minimize)
+- Number of constraints: `3`
+- Constraint 1:
+    - Coefficients: `3` and `1`
+    - Inequality: `=`
+    - Value of `b`: `3`
+- Constraint 2:
+    - Coefficients: `4` and `3`
+    - Inequality: `>=`
+    - Value of `b`: `6`
+- Constraint 3:
+    - Coefficients: `1` and `2`
+    - Inequality: `<=`
+    - Value of `b`: `4`
 
 
-Claro, aquí está el problema en el formato que solicitaste:
+Sure, here is the problem in the format you requested:
 
-- Número de variables: `4`
-- Coeficientes de la función objetivo: `2`, `4`, `4` y `-3`
-- Maximizar o minimizar: `1` (maximizar)
-- Número de restricciones: `2`
-- Restricción 1:
-    - Coeficientes: `1`, `1`, `1` y `0`
-    - Desigualdad: `=`
-    - Valor de `b`: `4`
-- Restricción 2:
-    - Coeficientes: `1`, `4`, `0` y `1`
-    - Desigualdad: `=`
-    - Valor de `b`: `8`
+- Number of variables: `4`
+- Objective function coefficients: `2`, `4`, `4` and `-3`
+- Maximize or minimize: `1` (maximize)
+- Number of constraints: `2`
+- Constraint 1:
+    - Coefficients: `1`, `1`, `1` and `0`
+    - Inequality: `=`
+    - Value of `b`: `4`
+- Constraint 2:
+    - Coefficients: `1`, `4`, `0` and `1`
+    - Inequality: `=`
+    - Value of `b`: `8`
