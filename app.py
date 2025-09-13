@@ -1,10 +1,15 @@
 import sys
 from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QIcon
 from gui.main_window import MainWindow
 from gui.views.emitting_stream import EmittingStream
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    
+    # Set application icon
+    app.setWindowIcon(QIcon("gui/assets/pixel-cat.png"))
+
     window = MainWindow()
     
     # Redirect stdout and stderr

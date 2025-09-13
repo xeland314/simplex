@@ -4,6 +4,7 @@ from .views.input_widget import InputWidget
 from .views.results_table import ResultsTable
 from .views.plot_widget import PlotWidget
 from .views.console_log_widget import ConsoleLogWidget
+from .views.about_dialog import AboutDialog
 from .solver_thread import SolverThread
 import numpy as np
 
@@ -81,7 +82,8 @@ class MainWindow(QMainWindow):
                 QMessageBox.critical(self, "Error", f"Could not save file:\n{str(e)}")
     
     def about(self):
-        QMessageBox.about(self, "About Simplex Solver", "A simple application to solve linear programming problems.")
+        about_dialog = AboutDialog(self)
+        about_dialog.exec()
         
     def solve(self):
         problem_str = self.input_widget.editor.toPlainText()
