@@ -29,7 +29,7 @@ class ResultsTable(QWidget):
 
         # Botón para copiar toda la tabla
         btn_layout = QHBoxLayout()
-        copy_all_btn = QPushButton("Copiar toda la tabla")
+        copy_all_btn = QPushButton("Copy All")
         copy_all_btn.clicked.connect(self.copy_entire_table)
         btn_layout.addStretch()
         btn_layout.addWidget(copy_all_btn)
@@ -83,8 +83,8 @@ class ResultsTable(QWidget):
     # Menú contextual clic derecho
     def open_context_menu(self, position):
         menu = QMenu()
-        copy_action = menu.addAction("Copiar selección")
-        copy_all_action = menu.addAction("Copiar toda la tabla")
+        copy_action = menu.addAction("Copy Selection")
+        copy_all_action = menu.addAction("Copy Entire Table")
 
         action = menu.exec(self.table.viewport().mapToGlobal(position))
         if action == copy_action:
