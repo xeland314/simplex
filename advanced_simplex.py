@@ -213,7 +213,7 @@ class Simplex:
         console = Console()
         console.print(table)
 
-    def show_results(self) -> None:
+    def show_results(self, file=None) -> None:
         self.print_problem()
         self.__show_prepared_data()
         if not self.response.success:
@@ -225,8 +225,14 @@ class Simplex:
         table.add_column(header="Optimal values", justify="left", style="green")
         for variable, value in self.optimal_values:
             table.add_row(variable, str(value))
-        console = Console()
-        console.print(table)
+
+        if file is None:
+            console = Console()
+            console.print(table)
+        else:
+            # Si file es un stream-like (EmittingStream), escribimos directamente allí
+            console = Console(file=file, force_terminal=False, color_system=None)
+            console.print(table)
 
 if __name__ == "__main__":
     run_simplex = Simplex()

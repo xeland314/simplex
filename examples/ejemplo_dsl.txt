@@ -1,0 +1,9 @@
+MINIMIZE z = 3*x1 + 5*x2
+SUBJECT TO
+    2*x1 + x2 >= 8
+    x1 + 3*x2 >= 9
+    x1 <= 5
+    x2 >= 1
+BOUNDS
+    x1 >= 0
+    x2 free
