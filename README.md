@@ -1,70 +1,132 @@
-# Simplex
+# Simplex Solver
 
-## Practical use case
+A comprehensive tool for solving linear programming problems, offering multiple interfaces including a command-line solver, a Domain Specific Language (DSL), and a graphical user interface (GUI).
 
-Suppose you have a company that produces two products, A and B. Each unit of product A that you produce generates a profit of $3 and each unit of product B generates a profit of $4. You want to maximize your total profits.
+## Features
 
-However, you have some production constraints. Each unit of product A requires 2 hours of labor and each unit of product B requires 3 hours of labor. You have a total of 100 hours of labor available. In addition, each unit of product A requires 1 kg of raw material and each unit of product B requires 2 kg of raw material. You have a total of 80 kg of raw material available.
+### Core Simplex Solver
+The core solver is implemented using `scipy.optimize.linprog` and provides the fundamental capabilities for solving linear programming problems. It handles maximization and minimization, various inequality types (`<=`, `>=`, `<`, `>`), and equality constraints (`=`).
 
-This problem can be formulated as a linear programming problem with the following objective function and constraints:
+### Domain Specific Languages (DSLs)
 
+#### 1. String-based DSL
+Define your linear programming problems using a human-readable string format. This DSL supports both direct string input and loading from standard `.lp` files. It automatically handles variable types, including "free" variables by converting them into a pair of non-negative variables.
+
+**Example Usage (String Input):**
+```python
+from dsl import DSL
+
+problem = DSL("""
+MINIMIZE z = 3*x1 + 5*x2
+SUBJECT TO
+    2*x1 + x2 >= 8
+    x1 + 3*x2 >= 9
+    x1 <= 5
+    x2 >= 1
+BOUNDS
+    x1 >= 0
+    x2 free
+""")
+
+simplex = problem.to_simplex()
+simplex.solve_problem()
+simplex.show_results()
 ```
-Maximize: 3A + 4B
-Subject to:
-    2A + 3B <= 100
-    A + 2B <= 80
-    A >= 0
-    B >= 0
+
+**Example Usage (LP File Input):**
+```python
+from dsl import DSL
+
+# Assuming 'my_problem.lp' contains the problem definition
+problem = DSL("my_problem.lp")
+simplex = problem.to_simplex()
+simplex.solve_problem()
+simplex.show_results()
 ```
 
-Where `A` and `B` represent the number of units produced of products A and B, respectively.
+#### 2. Pythonic DSL
+For a more integrated and programmatic approach, use the Pythonic DSL inspired by `sympy`. Define variables and construct your objective function and constraints directly using Python objects and operators.
 
-To solve this problem using the Python program I provided earlier, you can enter the following values when prompted:
+**Example Usage:**
+```python
+from pythonic_dsl import Model, Var, maximize
 
-- Number of variables: `2`
-- Objective function coefficients: `3` and `4`
-- Maximize or minimize: `1` (maximize)
-- Number of constraints: `2`
-- Constraint 1:
-    - Coefficients: `2` and `3`
-    - Inequality: `<=`
-    - Value of `b`: `100`
-- Constraint 2:
-    - Coefficients: `1` and `2`
-    - Inequality: `<=`
-    - Value of `b`: `80`
+m = Model("example_lp")
 
-After entering these values, the program will solve the problem and show you the optimal solution. In this case, the optimal solution is to produce 20 units of product A and 30 units of product B to obtain a maximum profit of $180.
+x1 = Var("x1", low=0)
+x2 = Var("x2", low=0)
 
-- Number of variables: `2`
-- Objective function coefficients: `4` and `1`
-- Maximize or minimize: `0` (minimize)
-- Number of constraints: `3`
-- Constraint 1:
-    - Coefficients: `3` and `1`
-    - Inequality: `=`
-    - Value of `b`: `3`
-- Constraint 2:
-    - Coefficients: `4` and `3`
-    - Inequality: `>=`
-    - Value of `b`: `6`
-- Constraint 3:
-    - Coefficients: `1` and `2`
-    - Inequality: `<=`
-    - Value of `b`: `4`
+m += maximize(5 * x1 + 4 * x2)
+m += (6 * x1 + 4 * x2 <= 24)
+m += (x1 + 2 * x2 <= 6)
+m += (-x1 + x2 <= 1)
+m += (x2 <= 2)
 
+result = m.solve()
+result.show_results()
+```
 
-Sure, here is the problem in the format you requested:
+### Graphical User Interface (GUI)
+A user-friendly desktop application built with PySide6 (Qt for Python) provides an interactive environment for defining, solving, and visualizing linear programming problems.
 
-- Number of variables: `4`
-- Objective function coefficients: `2`, `4`, `4` and `-3`
-- Maximize or minimize: `1` (maximize)
-- Number of constraints: `2`
-- Constraint 1:
-    - Coefficients: `1`, `1`, `1` and `0`
-    - Inequality: `=`
-    - Value of `b`: `4`
-- Constraint 2:
-    - Coefficients: `1`, `4`, `0` and `1`
-    - Inequality: `=`
-    - Value of `b`: `8`
+-   **Input Widget:** A text editor where you can type or load your problem definition.
+-   **Results Table:** Displays the optimal values for variables and the objective function.
+-   **Plotting:** For problems with two variables, a dedicated tab visualizes the constraints and the optimal solution point.
+-   **Console Log:** Redirects and displays all terminal output (e.g., `print` statements, error messages) within a dedicated tab in the GUI, ensuring readability by stripping ANSI escape codes. Includes a "Clear Console" button.
+-   **Menu Bar:**
+    -   **File:**
+        -   `Open`: Load problem definitions from `.lp` or `.txt` files.
+        -   `Save`: Save the current problem definition from the editor to an `.lp` file.
+        -   `Quit`: Exit the application.
+    -   **Help:**
+        -   `About`: Displays a custom dialog with application information, author, license, and links to GitHub and donation pages.
+-   **User Experience:**
+    -   Responsive UI: The solver runs in a separate thread to prevent the application from freezing during calculations.
+    -   Custom application icon (`pixel-cat.png`).
+    -   Uses the FiraCode font for enhanced readability and a modern aesthetic.
+
+## Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/xeland314/simplex.git
+    cd simplex
+    ```
+2.  **Create a virtual environment (recommended):**
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+    ```
+3.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+## Usage
+
+### Command Line (Interactive)
+Run the basic interactive solver:
+```bash
+python simplex.py
+```
+
+### DSL (Programmatic)
+Integrate the DSLs into your Python scripts as shown in the "Domain Specific Languages (DSLs)" section above.
+
+### GUI Application
+Launch the graphical interface:
+```bash
+python app.py
+```
+
+## Examples
+Check the `examples/` directory for sample `.lp` and `.txt` files that can be loaded into the GUI or used with the DSLs.
+
+## Development
+-   **Testing:** Run all unit tests with:
+    ```bash
+    uv run python -m unittest discover
+    ```
+
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
