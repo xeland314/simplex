@@ -1,0 +1,31 @@
+[project]
+name = "simplex"
+version = "0.1.0"
+description = "Simplex is a Python library for solving linear programming problems."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.10.6",
+    "pyside6>=6.9.2",
+    "rich>=14.1.0",
+    "scipy>=1.16.2",
+]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.16.0",
+    "ruff>=0.13.0",
+]
+
+[tool.ruff]
+# Set the maximum line length to 79.
+line-length = 79
+
+[tool.ruff.lint]
+# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
+# overlap with the use of a formatter, like Black, but we can override this behavior by
+# explicitly adding the rule.
+extend-select = ["E501"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

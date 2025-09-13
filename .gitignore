@@ -161,3 +161,9 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 .vscode
+uv.lock
+SimplexSolver.AppDir
+SimplexSolver-x86_64.AppImage
+test.lp
+test2.lp
+.ruff_cache
