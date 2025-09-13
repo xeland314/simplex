@@ -13,6 +13,7 @@ class SolverThread(QThread):
             dsl = DSL(self.problem_str)
             simplex = dsl.to_simplex()
             simplex.solve_problem()
+            simplex.show_results()
             self.finished.emit(simplex)
         except Exception as e:
             self.finished.emit(e)

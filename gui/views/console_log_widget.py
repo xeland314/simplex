@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTextEdit
+from PySide6.QtGui import QTextCursor
 
 class ConsoleLogWidget(QWidget):
     def __init__(self, parent=None):
@@ -9,5 +10,5 @@ class ConsoleLogWidget(QWidget):
         layout.addWidget(self.editor)
 
     def append_text(self, text):
-        self.editor.moveCursor(self.editor.textCursor().End)
+        self.editor.moveCursor(QTextCursor.MoveToEnd)
         self.editor.insertPlainText(text)
