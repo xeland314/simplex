@@ -42,6 +42,10 @@ class MainWindow(QMainWindow):
         open_action.triggered.connect(self.open_file)
         file_menu.addAction(open_action)
         
+        save_action = QAction("&Save", self)
+        save_action.triggered.connect(self.save_file)
+        file_menu.addAction(save_action)
+        
         quit_action = QAction("&Quit", self)
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
@@ -57,6 +61,24 @@ class MainWindow(QMainWindow):
         if file_name:
             with open(file_name, 'r') as f:
                 self.input_widget.editor.setPlainText(f.read())
+    
+    def save_file(self):
+        file_name, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save File",
+            "",
+            "LP Files (*.lp)"
+        )
+        if file_name:
+            # Ensure it has a .lp extension
+            if not file_name.lower().endswith(".lp"):
+                file_name += ".lp"
+            try:
+                with open(file_name, 'w') as f:
+                    f.write(self.input_widget.editor.toPlainText())
+                QMessageBox.information(self, "Saved", f"File saved to:\n{file_name}")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Could not save file:\n{str(e)}")
     
     def about(self):
         QMessageBox.about(self, "About Simplex Solver", "A simple application to solve linear programming problems.")
@@ -88,8 +110,23 @@ class MainWindow(QMainWindow):
                         c = const.coefficients
                         b = const.independent_term
                         if c[1] != 0:
-                            y = (b - c[0] * x) / c[1]
+                            y = (float(b) - float(c[0]) * x) / float(c[1])
                             ax.plot(x, y, label=const.representation)
+                
+                # Draw axes
+                ax.axhline(0, color="black", linewidth=1)
+                ax.axvline(0, color="black", linewidth=1)
+
+                # Mark optimal point if defined
+                opt_values = dict(result.optimal_values)
+                if "x1" in opt_values and "x2" in opt_values:
+                    x_opt = float(opt_values["x1"])
+                    y_opt = float(opt_values["x2"])
+                    ax.scatter(x_opt, y_opt, color="red", s=80, zorder=5, label="Optimal")
+                    ax.text(x_opt, y_opt, f"({x_opt:.2f}, {y_opt:.2f})",
+                            fontsize=9, ha="left", va="bottom", color="red")
+                
                 ax.legend()
+                ax.grid(True, linestyle="--", alpha=0.6)
             
             self.plot_widget.canvas.draw()
