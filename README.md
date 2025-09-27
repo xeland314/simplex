@@ -2,6 +2,9 @@
 
 A comprehensive tool for solving linear programming problems, offering multiple interfaces including a command-line solver, a Domain Specific Language (DSL), and a graphical user interface (GUI).
 
+![Example1](https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-43-53.jpg)
+![Example2](https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-44-25.jpg)
+
 ## Features
 
 ### Core Simplex Solver
