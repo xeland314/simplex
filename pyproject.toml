@@ -1,6 +1,6 @@
 [project]
 name = "simplex"
-version = "0.1.0"
+version = "0.1.1"
 description = "Simplex is a Python library for solving linear programming problems."
 readme = "README.md"
 requires-python = ">=3.12"

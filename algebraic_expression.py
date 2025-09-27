@@ -45,10 +45,10 @@ class AlgebraicExpression(MathExpression):
                 - The sign can be "=", "<=", ">=", "<" or ">".
         """
         # Split the equation into two parts: left and right side
-        left_side, right_side = re.split(r'[<>=]=?', self.expression)
-
-        # Get the equality or inequality sign
-        self.sign: str = re.findall(r'[<>=]=?', self.expression)[0]
+        parts = re.split(r'([<>=]=?)', self.expression)
+        left_side = parts[0]
+        self.sign = parts[1]
+        right_side = parts[2]
 
         # Get the coefficients and variable names from the left side
         for term in re.findall(r'([+-]?\s*\d*\.?\d*\s*\*?)\s*(\w+)', left_side):
@@ -61,8 +61,48 @@ class AlgebraicExpression(MathExpression):
             if variable not in self.ordered_variables:
                 self.ordered_variables.append(variable)
 
-        # Get the independent term from the right side
-        self.independent_term = Decimal(right_side.strip())
+        # Check if right side has variables
+        if re.search(r'[a-zA-Z]', right_side):
+            # Right side has variables, so we need to parse it and move terms to the left
+            self.independent_term = Decimal('0')
+            
+            # Handle expressions like "0.3 * (x1 + x2 + x3)"
+            match = re.match(r'\s*([\d\.\s]*)\s*\*\s*\((.*)\)', right_side.strip())
+            if match:
+                multiplier_str, expression_in_parentheses = match.groups()
+                multiplier = Decimal(multiplier_str.strip())
+
+                for term in re.findall(r'([+-]?\s*\d*\.?\d*\s*\*?)\s*(\w+)', expression_in_parentheses):
+                    coefficient, variable = term
+                    coefficient: str = coefficient.replace(' ', '').replace('*', '')
+                    
+                    term_coefficient = Decimal('0')
+                    if coefficient not in ['', '+', '-']:
+                        term_coefficient = Decimal(coefficient)
+                    else:
+                        term_coefficient = Decimal((coefficient if coefficient else '+') + '1')
+
+                    self.terms[variable] -= multiplier * term_coefficient
+                    if variable not in self.ordered_variables:
+                        self.ordered_variables.append(variable)
+            else:
+                # Handle simple expressions like "x1 + x2"
+                for term in re.findall(r'([+-]?\s*\d*\.?\d*\s*\*?)\s*(\w+)', right_side):
+                    coefficient, variable = term
+                    coefficient: str = coefficient.replace(' ', '').replace('*', '')
+                    
+                    term_coefficient = Decimal('0')
+                    if coefficient not in ['', '+', '-']:
+                        term_coefficient = Decimal(coefficient)
+                    else:
+                        term_coefficient = Decimal((coefficient if coefficient else '+') + '1')
+
+                    self.terms[variable] -= term_coefficient
+                    if variable not in self.ordered_variables:
+                        self.ordered_variables.append(variable)
+        else:
+            # Get the independent term from the right side
+            self.independent_term = Decimal(right_side.strip())
 
     @staticmethod
     def is_an_algebraic_expression(expression: str) -> bool:

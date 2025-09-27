@@ -194,12 +194,13 @@ class Simplex:
 
         #Save optimal values
         self.optimal_values = []
-        value = -self.response.fun if self.method == self.MAXIMIZE else self.response.fun
-        value = Decimal(value).quantize(self.PRECISION, ROUND_HALF_UP)
-        self.optimal_values.append((self.objective_function.function_name, value.normalize()))
-        for variable, value in zip(self.objective_function.variables, self.response.x):
+        if self.response.success:
+            value = -self.response.fun if self.method == self.MAXIMIZE else self.response.fun
             value = Decimal(value).quantize(self.PRECISION, ROUND_HALF_UP)
-            self.optimal_values.append((variable, value.normalize()))
+            self.optimal_values.append((self.objective_function.function_name, value.normalize()))
+            for variable, value in zip(self.objective_function.variables, self.response.x):
+                value = Decimal(value).quantize(self.PRECISION, ROUND_HALF_UP)
+                self.optimal_values.append((variable, value.normalize()))
 
     def __show_prepared_data(self) -> None:
         table = Table(title="Data Preparation", title_justify="center")
