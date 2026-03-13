@@ -10,6 +10,24 @@ A comprehensive tool for solving linear programming problems, offering multiple 
 ### Core Simplex Solver
 The core solver is implemented using `scipy.optimize.linprog` and provides the fundamental capabilities for solving linear programming problems. It handles maximization and minimization, various inequality types (`<=`, `>=`, `<`, `>`), and equality constraints (`=`).
 
+### Dual Simplex Solver
+In addition to the scipy-based solver, the project includes a manual implementation of the Dual Simplex algorithm in `dual_simplex.py`. This method is particularly useful for problems where the initial basic solution is primal infeasible (i.e., some right-hand side values are negative). The dual simplex iteratively adjusts the solution to achieve feasibility and optimality.
+
+The `DualSimplex` class supports both maximization and minimization problems with inequality constraints of the form `Ax <= b`.
+
+**Example Usage (Dual Simplex):**
+```python
+from dsl import DSL
+
+problem = DSL("dual.lp")  # or any .lp file
+dual_solver = problem.to_dual_simplex()
+solution, optimal_value = dual_solver.solve()
+print(f"Solution: {solution}")
+print(f"Optimal value: {optimal_value}")
+```
+
+The dual simplex implementation handles cases where the initial tableau has negative b values by performing dual pivots, and switches to primal pivots when necessary to reach optimality.
+
 ### Domain Specific Languages (DSLs)
 
 #### 1. String-based DSL
@@ -34,6 +52,11 @@ BOUNDS
 simplex = problem.to_simplex()
 simplex.solve_problem()
 simplex.show_results()
+
+# Or use dual simplex
+dual_solver = problem.to_dual_simplex()
+solution, optimal_value = dual_solver.solve()
+print(f"Solution: {solution}, Value: {optimal_value}")
 ```
 
 **Example Usage (LP File Input):**
@@ -45,6 +68,11 @@ problem = DSL("my_problem.lp")
 simplex = problem.to_simplex()
 simplex.solve_problem()
 simplex.show_results()
+
+# Or use dual simplex
+dual_solver = problem.to_dual_simplex()
+solution, optimal_value = dual_solver.solve()
+print(f"Solution: {solution}, Value: {optimal_value}")
 ```
 
 #### 2. Pythonic DSL
@@ -130,6 +158,7 @@ Check the `examples/` directory for sample `.lp` and `.txt` files that can be lo
     ```bash
     uv run python -m unittest discover
     ```
+    This includes tests for the core simplex solver, DSLs, and the dual simplex implementation (`test_dual_simplex.py`).
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for details.

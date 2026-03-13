@@ -103,3 +103,52 @@ class DSL:
             method=self.method,
             constraints=self.constraints,
         )
+
+    def to_dual_simplex(self):
+        from dual_simplex import DualSimplex
+        
+        # Prepare data similar to Simplex.__prepare_data
+        all_vars = set()
+        all_vars.update(self.objective_function.variables)
+        for c in self.constraints:
+            all_vars.update(c.variables)
+        
+        num_variables = len(all_vars)
+        ordered_vars = sorted(all_vars)
+        var_index = {var: i for i, var in enumerate(ordered_vars)}
+        
+        A = []
+        b = []
+        c = [0] * num_variables
+        for var, coeff in self.objective_function.terms.items():
+            c[var_index[var]] = float(coeff)
+        
+        if self.method == Simplex.MAXIMIZE:
+            c = [-ci for ci in c]
+        
+        for constraint in self.constraints:
+            row = [0] * num_variables
+            for var, coeff in constraint.terms.items():
+                row[var_index[var]] = float(coeff)
+            sign = constraint.sign
+            independent_term = float(constraint.independent_term)
+            if sign == '<=':
+                A.append(row)
+                b.append(independent_term)
+            elif sign == '>=':
+                A.append([-aij for aij in row])
+                b.append(-independent_term)
+            elif sign == '<':
+                A.append(row)
+                b.append(independent_term - 1e-6)
+            elif sign == '>':
+                A.append([-aij for aij in row])
+                b.append(-independent_term + 1e-6)
+            elif sign == '=':
+                A.append(row)
+                b.append(independent_term)
+                A.append([-aij for aij in row])
+                b.append(-independent_term)
+        
+        maximize = self.method == Simplex.MAXIMIZE
+        return DualSimplex(c, A, b, maximize)
