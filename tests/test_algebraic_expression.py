@@ -1,6 +1,6 @@
 import unittest
 
-from functions import AlgebraicExpression
+from algorithms.functions import AlgebraicExpression
 
 class TestAlgebraicExpression(unittest.TestCase):
 

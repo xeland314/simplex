@@ -1,10 +1,13 @@
 import unittest
-from dsl import DSL
-from advanced_simplex import Simplex
+from parser.dsl import DSL
+from algorithms.advanced_simplex import Simplex
+import os
 
 class TestLPFile(unittest.TestCase):
     def setUp(self):
-        self.dsl = DSL("/home/xeland314/workspace/python/simplex/test.lp")
+        # Using vuelos.lp as a test file since test.lp was missing/unknown
+        vuelos_path = os.path.join(os.path.dirname(__file__), "..", "examples", "vuelos.lp")
+        self.dsl = DSL(vuelos_path)
 
     def test_create_dsl_and_to_simplex(self):
         self.assertIsNotNone(self.dsl)

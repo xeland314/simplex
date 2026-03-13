@@ -1,5 +1,5 @@
 import unittest
-from pythonic_dsl import Model, Var, maximize
+from parser.pythonic_dsl import Model, Var, maximize
 
 class TestPythonicDSL(unittest.TestCase):
     def test_pythonic_dsl(self):

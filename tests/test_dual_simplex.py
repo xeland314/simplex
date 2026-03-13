@@ -3,7 +3,7 @@ from decimal import Decimal
 import unittest
 import numpy as np
 
-from dual_simplex import DualSimplex
+from algorithms.dual_simplex import DualSimplex
 
 class TestDualSimplexBase(ABC):
 

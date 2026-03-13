@@ -1,6 +1,6 @@
 import unittest
-from dsl import DSL
-from advanced_simplex import Simplex
+from parser.dsl import DSL
+from algorithms.advanced_simplex import Simplex
 
 class TestDSL(unittest.TestCase):
     def setUp(self):

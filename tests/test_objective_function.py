@@ -1,6 +1,6 @@
 import unittest
 
-from functions import ObjectiveFunction
+from algorithms.functions import ObjectiveFunction
 
 class TestObjectiveFunction(unittest.TestCase):
 

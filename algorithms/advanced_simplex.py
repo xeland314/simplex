@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.table import Table
 from scipy.optimize import linprog
 
-from functions import AlgebraicExpression, ObjectiveFunction
+from .functions import AlgebraicExpression, ObjectiveFunction
 
 clear_terminal = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 

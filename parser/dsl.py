@@ -1,7 +1,7 @@
 import re
 import os
-from advanced_simplex import Simplex
-from functions import AlgebraicExpression, ObjectiveFunction
+from algorithms.advanced_simplex import Simplex
+from algorithms.functions import AlgebraicExpression, ObjectiveFunction
 
 
 class DSL:
@@ -105,7 +105,7 @@ class DSL:
         )
 
     def to_dual_simplex(self):
-        from dual_simplex import DualSimplex
+        from algorithms.dual_simplex import DualSimplex
         
         # Prepare data similar to Simplex.__prepare_data
         all_vars = set()

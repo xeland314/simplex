@@ -1,6 +1,7 @@
 from decimal import Decimal
 import re
-from math_expression import MathExpression
+
+from parser.math_expression import MathExpression
 
 class AlgebraicExpression(MathExpression):
     """

@@ -1,7 +1,9 @@
-from dsl import DSL
+import os
+from parser.dsl import DSL
 
 # Load the dual.lp file
-problem = DSL("dual.lp")
+dual_path = os.path.join(os.path.dirname(__file__), "..", "examples", "dual.lp")
+problem = DSL(dual_path)
 
 # Create dual simplex solver
 dual_solver = problem.to_dual_simplex()

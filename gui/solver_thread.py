@@ -1,5 +1,5 @@
 from PySide6.QtCore import QThread, Signal
-from dsl import DSL
+from parser.dsl import DSL
 
 class SolverThread(QThread):
     finished = Signal(object)

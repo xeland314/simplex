@@ -1,5 +1,5 @@
-from advanced_simplex import Simplex
-from functions import AlgebraicExpression, ObjectiveFunction
+from algorithms.advanced_simplex import Simplex
+from algorithms.functions import AlgebraicExpression, ObjectiveFunction
 
 class Expression:
     def __init__(self, terms=None, const=0):

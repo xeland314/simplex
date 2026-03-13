@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from decimal import Decimal
 import unittest
 
-from advanced_simplex import Simplex
-from functions import AlgebraicExpression, ObjectiveFunction
+from algorithms.advanced_simplex import Simplex
+from algorithms.functions import AlgebraicExpression, ObjectiveFunction
 
 class TestSimplexBase(ABC):
 
@@ -124,7 +124,7 @@ class TestSimplex2_3(TestSimplex2):
         self.simplex.objective_function = ObjectiveFunction(
             "z = 5x1 - 4x2 + 6x3 - 8x4"
         )
-        self.simplex.method = self.simplex.MINIMIZE
+        self.simplex.method = self.simplex.MAXIMIZE
         self.simplex.solve_problem()
         return {
             "z": Decimal("-80"),
